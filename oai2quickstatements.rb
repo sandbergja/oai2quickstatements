@@ -1,5 +1,6 @@
 require 'json'
 require 'rexml'
+require 'namae'
 require 'oai'
 
 DATE_FORMAT = '+%Y-%m-%dT00:00:00Z/11'
@@ -25,7 +26,9 @@ end
 def creators(metadata)
     REXML::XPath.match(metadata,
                        './/dc:creator/text()', {'dc' => DC}
-                       ).map{|author| author.value.gsub(/(\w+),\s(.*)/, '"\2 \1"') }
+                       ).map{|author| Namae.parse(author.value)[0]&.display_order }
+                        .compact
+                        .map{|author| "\"#{author}\"" }
 end
 
 def full_text(metadata)
@@ -55,9 +58,13 @@ def date(metadata)
                        ).map{|value| Date.parse(value.value).strftime(DATE_FORMAT) }
 end
 
-client.list_records(options).full.each do |record|
+client.list_records().full.each do |record|
     metadata = record.metadata
-    title = REXML::XPath.first(metadata, './/dc:title/text()', {'dc' => DC}).value
+    begin
+      title = REXML::XPath.first(metadata, './/dc:title/text()', {'dc' => DC}).value
+    rescue
+      next
+    end
     next unless title
     already_exists = reconcile(title)
     next if already_exists

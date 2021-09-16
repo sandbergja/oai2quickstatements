@@ -24,6 +24,7 @@ GEM
     faraday_middleware (1.1.0)
       faraday (~> 1.0)
     multipart-post (2.1.1)
+    namae (1.1.1)
     oai (1.1.0)
       builder (>= 3.1.0)
       faraday
@@ -35,6 +36,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  namae (~> 1.1)
   oai (~> 1.1)
   rexml (~> 3.2)
 
