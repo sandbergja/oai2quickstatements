@@ -58,7 +58,7 @@ def date(metadata)
                        ).map{|value| Date.parse(value.value).strftime(DATE_FORMAT) }
 end
 
-client.list_records().full.each do |record|
+client.list_records(options).full.each do |record|
     metadata = record.metadata
     begin
       title = REXML::XPath.first(metadata, './/dc:title/text()', {'dc' => DC}).value
