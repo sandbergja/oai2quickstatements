@@ -1,3 +1,4 @@
+require 'cgi'
 require 'json'
 require 'rexml'
 require 'namae'
@@ -11,8 +12,8 @@ periodical_qid = ARGV[1]
 options = ARGV[2] ? {set: ARGV[2]} : {}
 
 def reconcile(string)
-    clean_string = string.gsub(/[^0-9A-Za-z]/, '')
-    uri = URI.parse "https://wikidata.reconci.link/en/api?queries=#{{ 'q1' => { 'query' => clean_string,
+    escaped_string = CGI.escape string
+    uri = URI.parse "https://wikidata.reconci.link/en/api?queries=#{{ 'q1' => { 'query' => escaped_string,
                                                                                 'limit' => 1 } }.to_json}"
     response = JSON.parse(Net::HTTP.get(uri))
     return nil unless response
