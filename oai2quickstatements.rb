@@ -16,7 +16,7 @@ def reconcile(string)
     uri = URI.parse "https://wikidata.reconci.link/en/api?queries=#{{ 'q1' => { 'query' => escaped_string,
                                                                                 'limit' => 1 } }.to_json}"
     response = JSON.parse(Net::HTTP.get(uri))
-    return nil unless response
+    return nil unless response && response['q1']
 
     results = response['q1']['result']
     return nil unless results.any?
@@ -62,7 +62,7 @@ end
 client.list_records(options).full.each do |record|
     metadata = record.metadata
     begin
-      title = REXML::XPath.first(metadata, './/dc:title/text()', {'dc' => DC}).value
+      title = REXML::XPath.first(metadata, './/dc:title/text()', {'dc' => DC}).value.gsub(/<\/?[^>]*>/, "")
     rescue
       next
     end
